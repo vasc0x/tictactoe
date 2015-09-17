@@ -1,0 +1,13 @@
+run:
+Fantasy 1: 17
+Fantasy 2: 33
+Fantasy 3: 31
+Fantasy 4: 12
+Fantasy 5: 34
+Lotto 1: 37
+Lotto 2: 21
+Lotto 3: 38
+Lotto 4: 49
+Lotto 5: 27
+Lotto 6: 10
+BUILD SUCCESSFUL (total time: 11 seconds)

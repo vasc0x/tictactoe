@@ -36,6 +36,9 @@ public class TicTacToeGame implements ActionListener {
     
     JFrame frmWindow = new JFrame(APP_NAME);
     JLabel jlblTurns = new JLabel();
+    JRadioButton rbtnSmarts = new JRadioButton("Medium");
+    JRadioButton rbtnUnbeatable = new JRadioButton("Harder");
+    ButtonGroup rbtnGroup = new ButtonGroup();
     //JLabel jlblUsedCells = new JLabel("0");
     
     Random r = new Random();
@@ -48,12 +51,6 @@ public class TicTacToeGame implements ActionListener {
     
     public void init()
     {
-        player[COMPUTER] = new Player();
-        player[HUMAN] = new Player();
-        player[COMPUTER].setName("Computer");
-        player[HUMAN].setName(JOptionPane.showInputDialog(null, "Please enter your name.", "Player 1"));
-        JOptionPane.showMessageDialog(null, "Welcome " + player[HUMAN].getName() + ".\n\nYou are the X.");
-        
         for (int row = 0; row < NUMBER_OF_ROWS; row++)
         {
             for (int col = 0; col < NUMBER_OF_COLS; col++)
@@ -68,17 +65,29 @@ public class TicTacToeGame implements ActionListener {
                 btnCells[row][col].addActionListener(this);
                 frmWindow.add(btnCells[row][col]);
             }
-        } 
+        }
+        
+        
+        rbtnGroup.add(rbtnSmarts);
+        rbtnGroup.add(rbtnUnbeatable);
+        
         // http://docs.oracle.com/javase/7/docs/api/java/awt/GridLayout.html
         frmWindow.setLayout(new GridLayout(4, 3));
         frmWindow.add(jlblTurns); 
-        //frmWindow.add(jlblUsedCells);
+        frmWindow.add(rbtnSmarts);
+        frmWindow.add(rbtnUnbeatable);
         frmWindow.setBounds(200, 300, 300, 400);
         frmWindow.pack();
         frmWindow.setSize(300, 400);
         frmWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frmWindow.setResizable(false);
         frmWindow.setVisible(true);
+        
+        player[COMPUTER] = new Player();
+        player[HUMAN] = new Player();
+        player[COMPUTER].setName("Computer");
+        player[HUMAN].setName(JOptionPane.showInputDialog(frmWindow, "Please enter your name.", "Player 1"));
+        JOptionPane.showMessageDialog(frmWindow, "Welcome " + player[HUMAN].getName() + ".\n\nYou are the X.");        
         
         launch();
     }
@@ -92,7 +101,7 @@ public class TicTacToeGame implements ActionListener {
         if (playFirst == COMPUTER)
         {
             currentPlayer = Letter.O;
-            computerPlay();
+            randomComputerPlay();
         }
         else
         {
@@ -101,11 +110,11 @@ public class TicTacToeGame implements ActionListener {
         }
     }
     
-    public void computerPlay()
+    public void randomComputerPlay()
     {
         rndRow = r.nextInt(NUMBER_OF_ROWS);
         rndCol = r.nextInt(NUMBER_OF_COLS);
-       
+
         if (btnCells[rndRow][rndCol].isEmpty())
         {
             jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
@@ -117,9 +126,390 @@ public class TicTacToeGame implements ActionListener {
         }   
         else if (getUsedCells() <= 9)
         {
-            computerPlay();
+            randomComputerPlay();
         }
     }
+    
+    public void smartComputerPlay()
+    {
+        if (btnCells[0][0].getText().equals("X") &&
+            btnCells[0][1].getText().equals("X") &&
+            btnCells[0][1].getText().isEmpty())
+        {
+            System.out.println(btnCells[0][1].getText());
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[0][2].setText("O");
+            btnCells[0][2].fill();
+            checkWin(0, 2);
+            currentPlayer = Letter.X;
+        }
+        else if (btnCells[0][0].getText().equals("X") &&
+                 btnCells[1][0].getText().equals("X") &&
+                 btnCells[2][0].getText().isEmpty())
+        {
+            System.out.println(btnCells[0][1].getText());
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[2][0].setText("O");
+            btnCells[2][0].fill();
+            checkWin(2, 0);
+            currentPlayer = Letter.X;            
+        }
+        else if (btnCells[0][0].getText().equals("X") &&
+                 btnCells[1][1].getText().equals("X") &&
+                 btnCells[2][2].getText().isEmpty())
+        {
+            System.out.println(btnCells[0][1].getText());
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[2][2].setText("O");
+            btnCells[2][2].fill();
+            checkWin(2, 2);
+            currentPlayer = Letter.X;            
+        }
+        else
+        {
+            randomComputerPlay();
+        }
+        
+    }
+    
+    public void unbeatableComputerPlay()
+    {
+        // First row from left
+        if (btnCells[0][0].getText().equals("X") &&
+            btnCells[0][1].getText().equals("X") &&
+            btnCells[0][2].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[0][2].setText("O");
+            btnCells[0][2].fill();
+            checkWin(0, 2);
+            currentPlayer = Letter.X;
+        }
+        // Second row from left
+        else if (btnCells[1][0].getText().equals("X") &&
+                 btnCells[1][1].getText().equals("X") &&
+                 btnCells[1][2].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[1][2].setText("O");
+            btnCells[1][2].fill();
+            checkWin(1, 2);
+            currentPlayer = Letter.X;
+        }
+        // Third row from left
+        else if (btnCells[2][0].getText().equals("X") &&
+                 btnCells[2][1].getText().equals("X") &&
+                 btnCells[2][2].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[2][2].setText("O");
+            btnCells[2][2].fill();
+            checkWin(2, 2);
+            currentPlayer = Letter.X;            
+        }  
+        // First row from right
+        else if (btnCells[0][2].getText().equals("X") &&
+            btnCells[0][1].getText().equals("X") &&
+            btnCells[0][0].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[0][0].setText("O");
+            btnCells[0][0].fill();
+            checkWin(0, 0);
+            currentPlayer = Letter.X;
+        }
+        // Second row from right
+        else if (btnCells[1][2].getText().equals("X") &&
+                 btnCells[1][1].getText().equals("X") &&
+                 btnCells[1][0].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[1][0].setText("O");
+            btnCells[1][0].fill();
+            checkWin(1, 0);
+            currentPlayer = Letter.X;
+        }
+        // Third row from right
+        else if (btnCells[2][2].getText().equals("X") &&
+                 btnCells[2][1].getText().equals("X") &&
+                 btnCells[2][0].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[2][0].setText("O");
+            btnCells[2][0].fill();
+            checkWin(2, 0);
+            currentPlayer = Letter.X;            
+        }           
+        // First column from top
+        else if (btnCells[0][0].getText().equals("X") &&
+                 btnCells[1][0].getText().equals("X") &&
+                 btnCells[2][0].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[2][0].setText("O");
+            btnCells[2][0].fill();
+            checkWin(2, 0);
+            currentPlayer = Letter.X;            
+        }
+        // Second column from top
+        else if (btnCells[0][1].getText().equals("X") &&
+                 btnCells[1][1].getText().equals("X") &&
+                 btnCells[2][1].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[2][1].setText("O");
+            btnCells[2][1].fill();
+            checkWin(2, 1);
+            currentPlayer = Letter.X;            
+        }   
+        // Third column from top
+        else if (btnCells[0][2].getText().equals("X") &&
+                 btnCells[1][2].getText().equals("X") &&
+                 btnCells[2][2].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[2][2].setText("O");
+            btnCells[2][2].fill();
+            checkWin(2, 2);
+            currentPlayer = Letter.X;            
+        }         
+        // First column from bottom
+        else if (btnCells[2][0].getText().equals("X") &&
+                 btnCells[1][0].getText().equals("X") &&
+                 btnCells[0][0].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[0][0].setText("O");
+            btnCells[0][0].fill();
+            checkWin(0, 0);
+            currentPlayer = Letter.X;
+        }
+        // Second column from bottom
+        else if (btnCells[2][1].getText().equals("X") &&
+                 btnCells[1][1].getText().equals("X") &&
+                 btnCells[0][1].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[0][1].setText("O");
+            btnCells[0][1].fill();
+            checkWin(0, 1);
+            currentPlayer = Letter.X;
+        } 
+        // Third column from bottom
+        else if (btnCells[2][2].getText().equals("X") &&
+                 btnCells[1][2].getText().equals("X") &&
+                 btnCells[0][2].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[0][2].setText("O");
+            btnCells[0][2].fill();
+            checkWin(0, 2);
+            currentPlayer = Letter.X;
+        }
+        // Top left bottom right diagonal
+        else if (btnCells[0][0].getText().equals("X") &&
+                 btnCells[1][1].getText().equals("X") &&
+                 btnCells[2][2].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[2][2].setText("O");
+            btnCells[2][2].fill();
+            checkWin(2, 2);
+            currentPlayer = Letter.X;            
+        }           
+        // Bottom left top right diagonal
+        else if (btnCells[2][0].getText().equals("X") &&
+                 btnCells[1][1].getText().equals("X") &&
+                 btnCells[0][2].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[0][2].setText("O");
+            btnCells[0][2].fill();
+            checkWin(0, 2);
+            currentPlayer = Letter.X;
+        }
+        // Top right bottom left diagonal
+        else if (btnCells[0][2].getText().equals("X") &&
+                 btnCells[1][1].getText().equals("X") &&
+                 btnCells[2][0].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[2][0].setText("O");
+            btnCells[2][0].fill();
+            checkWin(2, 0);
+            currentPlayer = Letter.X;            
+        }           
+        // Bottom right top left diagonal
+        else if (btnCells[2][2].getText().equals("X") &&
+                 btnCells[1][1].getText().equals("X") &&
+                 btnCells[0][0].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[0][0].setText("O");
+            btnCells[0][0].fill();
+            checkWin(0, 0);
+            currentPlayer = Letter.X;
+        }
+        // Second column from bottom
+        else if (btnCells[2][1].getText().equals("X") &&
+                 btnCells[1][1].getText().equals("X") &&
+                 btnCells[0][1].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[0][1].setText("O");
+            btnCells[0][1].fill();
+            checkWin(0, 1);
+            currentPlayer = Letter.X;
+        } 
+        // Third column from bottom
+        else if (btnCells[2][2].getText().equals("X") &&
+                 btnCells[1][2].getText().equals("X") &&
+                 btnCells[0][2].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[0][2].setText("O");
+            btnCells[0][2].fill();
+            checkWin(0, 2);
+            currentPlayer = Letter.X;
+        }
+        // Top left bottom right diagonal
+        else if (btnCells[0][0].getText().equals("X") &&
+                 btnCells[1][1].getText().equals("X") &&
+                 btnCells[2][2].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[2][2].setText("O");
+            btnCells[2][2].fill();
+            checkWin(2, 2);
+            currentPlayer = Letter.X;            
+        }           
+        // Bottom left top right diagonal
+        else if (btnCells[2][0].getText().equals("X") &&
+                 btnCells[1][1].getText().equals("X") &&
+                 btnCells[0][2].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[0][2].setText("O");
+            btnCells[0][2].fill();
+            checkWin(0, 2);
+            currentPlayer = Letter.X;
+        }
+        // Top right bottom left diagonal
+        else if (btnCells[0][2].getText().equals("X") &&
+                 btnCells[1][1].getText().equals("X") &&
+                 btnCells[2][0].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[2][0].setText("O");
+            btnCells[2][0].fill();
+            checkWin(2, 0);
+            currentPlayer = Letter.X;            
+        }           
+        // Bottom right top left diagonal
+        else if (btnCells[2][2].getText().equals("X") &&
+                 btnCells[1][1].getText().equals("X") &&
+                 btnCells[0][0].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[0][0].setText("O");
+            btnCells[0][0].fill();
+            checkWin(0, 0);
+            currentPlayer = Letter.X;
+        }
+        // First row corners
+        else if (btnCells[0][0].getText().equals("X") &&
+                 btnCells[0][2].getText().equals("X") &&
+                 btnCells[0][1].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[0][1].setText("O");
+            btnCells[0][1].fill();
+            checkWin(0, 1);
+            currentPlayer = Letter.X;
+        } 
+        // Second row corners
+        else if (btnCells[1][0].getText().equals("X") &&
+                 btnCells[1][2].getText().equals("X") &&
+                 btnCells[1][1].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[1][1].setText("O");
+            btnCells[1][1].fill();
+            checkWin(1, 1);
+            currentPlayer = Letter.X;
+        } 
+        // Third row corners
+        else if (btnCells[2][0].getText().equals("X") &&
+                 btnCells[2][2].getText().equals("X") &&
+                 btnCells[2][1].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[2][1].setText("O");
+            btnCells[2][1].fill();
+            checkWin(2, 1);
+            currentPlayer = Letter.X;
+        }
+        // First column corners
+        else if (btnCells[0][0].getText().equals("X") &&
+                 btnCells[2][0].getText().equals("X") &&
+                 btnCells[1][0].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[1][0].setText("O");
+            btnCells[1][0].fill();
+            checkWin(1, 0);
+            currentPlayer = Letter.X;            
+        }           
+        // Second column corners
+        else if (btnCells[0][1].getText().equals("X") &&
+                 btnCells[2][1].getText().equals("X") &&
+                 btnCells[1][1].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[1][1].setText("O");
+            btnCells[1][1].fill();
+            checkWin(1, 1);
+            currentPlayer = Letter.X;
+        }
+        // Third column corners
+        else if (btnCells[0][2].getText().equals("X") &&
+                 btnCells[2][2].getText().equals("X") &&
+                 btnCells[1][2].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[1][2].setText("O");
+            btnCells[1][2].fill();
+            checkWin(1, 2);
+            currentPlayer = Letter.X;            
+        }           
+        // Top left bottom right diagonal corners
+        else if (btnCells[0][0].getText().equals("X") &&
+                 btnCells[2][2].getText().equals("X") &&
+                 btnCells[1][1].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[1][1].setText("O");
+            btnCells[1][1].fill();
+            checkWin(1, 1);
+            currentPlayer = Letter.X;
+        }            
+        // Top right bottom left diagonal
+        else if (btnCells[0][2].getText().equals("X") &&
+                 btnCells[2][0].getText().equals("X") &&
+                 btnCells[1][1].getText().isEmpty())
+        {
+            jlblTurns.setText(player[HUMAN].getName() + "'s turn.");
+            btnCells[1][1].setText("O");
+            btnCells[1][1].fill();
+            checkWin(1, 1);
+            currentPlayer = Letter.X;
+        }          
+        else
+        {
+            randomComputerPlay();
+        }
+        
+    }    
     
     public int getUsedCells()
     {
@@ -160,11 +550,11 @@ public class TicTacToeGame implements ActionListener {
         {            
             if (currentPlayer.equals(Letter.X))
             {
-                JOptionPane.showMessageDialog(null, player[HUMAN].getName() + " won!");
+                JOptionPane.showMessageDialog(frmWindow, player[HUMAN].getName() + " won!");
             }
             else if (currentPlayer.equals(Letter.O))
             {
-                JOptionPane.showMessageDialog(null, player[COMPUTER].getName() + " won!");
+                JOptionPane.showMessageDialog(frmWindow, player[COMPUTER].getName() + " won!");
             }
             
             repeat();
@@ -173,7 +563,7 @@ public class TicTacToeGame implements ActionListener {
         } 
         else if (getUsedCells() == 9)
         {
-            JOptionPane.showMessageDialog(null, "It's a tie!");
+            JOptionPane.showMessageDialog(frmWindow, "It's a tie!");
             repeat();
             
             return true;
@@ -193,7 +583,7 @@ public class TicTacToeGame implements ActionListener {
         }
         else
         {
-            JOptionPane.showMessageDialog(null, "Goodbye " + player[HUMAN].getName() + "!");
+            JOptionPane.showMessageDialog(frmWindow, "Goodbye " + player[HUMAN].getName() + "!");
             System.exit(0);                
         }        
     }
@@ -230,7 +620,19 @@ public class TicTacToeGame implements ActionListener {
                 if (!checkWin(btnRow, btnCol))
                 {
                     currentPlayer = Letter.O;
-                    computerPlay();
+                    
+                    if (rbtnSmarts.isSelected())
+                    {
+                        smartComputerPlay();                        
+                    }
+                    else if (rbtnUnbeatable.isSelected())
+                    {
+                        unbeatableComputerPlay();
+                    }
+                    else
+                    {
+                        randomComputerPlay(); 
+                    }
                 }
             }
 

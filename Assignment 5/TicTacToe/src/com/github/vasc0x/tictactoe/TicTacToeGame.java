@@ -172,7 +172,7 @@ public class TicTacToeGame implements ActionListener {
         
     }
     
-    public void unbeatableComputerPlay()
+    public void smarterComputerPlay()
     {
         // First row from left
         if (btnCells[0][0].getText().equals("X") &&
@@ -627,7 +627,7 @@ public class TicTacToeGame implements ActionListener {
                     }
                     else if (rbtnUnbeatable.isSelected())
                     {
-                        unbeatableComputerPlay();
+                        smarterComputerPlay();
                     }
                     else
                     {
